@@ -1,12 +1,12 @@
 import numpy as np
-import qiskit
+from qiskit import QuantumCircuit, execute, Aer
+from qiskit.circuit import Parameter
 
 
 def exctract_single_qubit_measurment(dict_of_counts, qubit_range):
     num_qubits = len(list(dict_of_counts.keys())[0])
-    result = np.zeros(len(qubit_range))
     result = np.zeros(num_qubits)
-#     print(result)
+
     for el in dict_of_counts:
         for i in range(num_qubits):
             if i in qubit_range and el[i] == '1':
@@ -15,14 +15,14 @@ def exctract_single_qubit_measurment(dict_of_counts, qubit_range):
     return result[qubit_range]
 
 
-class QuantumCircuit:
+class QCircuit:
 
     def __init__(self, n_qubits, backend, shots):
         # --- Circuit definition ---
-        self._circuit = qiskit.QuantumCircuit(n_qubits)
+        self._circuit = QuantumCircuit(n_qubits)
         self.n_qubits = n_qubits
         all_qubits = [i for i in range(n_qubits)]
-        self.theta = qiskit.circuit.Parameter('theta')
+        self.theta = Parameter('theta')
 
         # Hadamard gate ref: https://www.quantum-inspire.com/kbase/hadamard/
         self._circuit.h(all_qubits)
@@ -36,7 +36,7 @@ class QuantumCircuit:
         self.shots = shots
 
     def run(self, thetas):
-        job = qiskit.execute(
+        job = execute(
             self._circuit.bind_parameters({self.theta: thetas[0]}),
             self.backend,
             shots=self.shots,
@@ -54,10 +54,13 @@ class QuantumCircuit:
         new_probabilities = exctract_single_qubit_measurment(result, list(range(self.n_qubits))) / self.shots
         return new_probabilities
 
+    def draw(self):
+        print(self._circuit.draw())
+
 
 if __name__ == '__main__':
-    simulator = qiskit.Aer.get_backend('qasm_simulator')
+    simulator = Aer.get_backend('qasm_simulator')
 
-    circuit = QuantumCircuit(1, simulator, 100)
+    circuit = QCircuit(1, simulator, 100)
     print('Expected value for rotation pi {}'.format(circuit.run([np.pi])[0]))
-    print(circuit._circuit.draw())
+    circuit.draw()
