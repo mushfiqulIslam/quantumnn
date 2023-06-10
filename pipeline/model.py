@@ -23,7 +23,7 @@ class Model(Module):
         self.fc4 = Linear(16, 10)
 
         # 4 bit Quantum layer with 12 inputs across dimensions and 16 length output
-        self.ql = Hybrid(Aer.get_backend('qasm_simulator'), 6000, np.pi/4)
+        self.ql = Hybrid(Aer.get_backend('qasm_simulator'), 3000, np.pi/4)
 
         print("---- Built ----")
 
