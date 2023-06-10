@@ -37,7 +37,6 @@ class CNNPipeline:
         input_size = len(self.train_loader)
         for e in range(epoch):
             running_loss = 0.0
-
             for i, (input_data, target) in enumerate(self.train_loader):
                 # get the inputs; data is a list of [inputs, labels]
 
@@ -49,7 +48,10 @@ class CNNPipeline:
 
                 running_loss += loss.item()
 
-            print(f'Epoch {e + 1} loss: {running_loss / input_size:.3f}')
+                if i % (input_size / 12) == 0 and i != 0:
+                    print(f'Epoch {e + 1}: [{i}/{input_size}] loss: {running_loss / i:.3f}')
+
+            print(f'--- Epoch {e + 1} loss: {running_loss / input_size:.3f} ---')
             epoch_loss.append(running_loss / input_size)
 
         print("---- Model training completed ----")
@@ -99,9 +101,9 @@ class CNNPipeline:
         fig.show()
 
     def evaluate(self):
-        self.model = Model()
-        self.model.load_state_dict(torch.load('./cnn.pth'))
-        self.loss_func = CrossEntropyLoss()
+        # self.model = Model()
+        # self.model.load_state_dict(torch.load('./cnn.pth'))
+        # self.loss_func = CrossEntropyLoss()
 
         self.load_test_mnist_data()
         self.model.eval()
