@@ -28,6 +28,11 @@ class CNNPipeline:
         self.print_samples(sample_size=print_sample_size)
 
         self.model = Model()
+        if torch.cuda.is_available():
+            print("---- Loading model with GPU ----")
+            device = torch.device("cuda:0")
+            self.model.to(device)
+
         self.loss_func = CrossEntropyLoss()
         optimizer = SGD(self.model.parameters(), lr=0.001, momentum=0.9)
 
@@ -35,12 +40,18 @@ class CNNPipeline:
         self.model.train()
         epoch_loss = []
         input_size = len(self.train_loader)
+
         for e in range(epoch):
             running_loss = 0.0
             for i, (input_data, target) in enumerate(self.train_loader):
                 # get the inputs; data is a list of [inputs, labels]
 
                 optimizer.zero_grad()
+
+                if torch.cuda.is_available():
+                    input_data = input_data.cuda()
+                    target = target.cuda()
+
                 output = self.model(input_data)
                 loss = self.loss_func(output, target)
                 loss.backward()
@@ -74,6 +85,7 @@ class CNNPipeline:
         self.data_classes = train_dataset.classes
         self.train_loader = data.DataLoader(train_dataset, batch_size=1,
                                             shuffle=True, num_workers=2)
+
         print("---- Data loading completed ----")
 
     def load_test_mnist_data(self):

@@ -1,5 +1,3 @@
-import itertools
-
 import numpy as np
 from qiskit import QuantumCircuit, Aer, execute
 from qiskit.circuit import Parameter

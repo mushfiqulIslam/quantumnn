@@ -60,5 +60,8 @@ class Model(Module):
         # Because of different gradient function and data type, ql output need to reset its data types
         # Before dtype=torch.float64, grad_fn=<HybridFunctionBackward>
         # after x.float() grad_fn=<<ToCopyBackward0>
+        if torch.cuda.is_available():
+            x = x.cuda()
+
         x = self.fc4(x.float())
         return x

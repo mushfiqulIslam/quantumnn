@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from torch import tensor, Tensor, cat
 from torch.autograd import Function
 from torch.nn import Module
@@ -42,7 +43,11 @@ class HybridFunction(Function):
             gradient = tensor([expectation_right]) - tensor([expectation_left])
             gradients = cat((gradients, gradient.float()))
 
-        return (gradients.float() * grad_output.float()).T, None, None
+        result = (gradients.float() * grad_output.float()).T
+        if torch.cuda.is_available():
+            result = result.cuda()
+
+        return result, None, None
 
 
 class Hybrid(Module):
