@@ -123,6 +123,10 @@ class CNNPipeline:
             correct = 0
             total_loss = []
             for _, (test_data, target) in enumerate(self.test_loader):
+                if torch.cuda.is_available():
+                    test_data = test_data.cuda()
+                    target = target.cuda()
+
                 output = self.model(test_data)
 
                 pred = output.argmax(dim=1, keepdim=True)
